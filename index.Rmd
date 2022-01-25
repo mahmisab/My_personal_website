@@ -1,0 +1,8 @@
+---
+title: "About me"
+description: |
+  My name is Isabella Mahmoud and I'm currently a first-year graduate student studying biostatistics at Grand Valley State Univeristy. I graduated in May of 2021 with a Bachelor of Science in Biology where my emphasis was in pre-professional studies and ecology and evolutionary biology. Additionally, I minored in applied statistics. In my undergraduate career, I took courses in Middle Eastern studies, organic chemistry, biological chemistry, general biology, plant biotechnology, Holocaust studies, ecology, principles of chemistry, microbiology, human physiology, human anatomy, human genetics, cell and molecular biology, arabic, British life and culture, psychology, medical terminology, and conservation biology. In my undergraduate career, I made Deans list multiple semesters: Winter 2018, Fall 2018, Fall 2019, Winter 2020, Fall 2020, and Winter 2021. 
+  During my sophomore year, I studied abroad at Kingston University for the Winter 2019 semester. In Fall 2018, I became a member of Alpha Omicron Pi and attained a position as the "Vice President of Education." Throughout my undergrad and graduate education, I have also been an active member of Grand Valley Dance Troupe, a student run organization. 
+site: distill::distill_website
+---
+![GVSU Graduation](MGrad.jpeg)

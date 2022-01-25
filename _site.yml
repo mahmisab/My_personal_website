@@ -1,0 +1,12 @@
+name: "New blog"
+title: "Isabella Mahmoud"
+description: |
+  Projects
+output_dir: "_site"
+navbar:
+  right:
+    - text: "About"
+      href: index.html
+    - text: "Projects"
+      href: projects.html
+output: distill::distill_article

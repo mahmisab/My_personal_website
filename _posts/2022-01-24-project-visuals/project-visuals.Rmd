@@ -1,0 +1,146 @@
+---
+title: "Project Visuals"
+description: |
+  During the fall semester of 2021, I completed an introductory R course. This post includes graphs and visuals using my final project dataset. The [dataset](https://osf.io/kthnf/) was last updated in October of 2020 and focuses on pregnancies, births, and abortions in the United States for the years 1973-2017. This dataset was compiled and analyzed by Isaac Maddow-Zimet, Kathryn Kost, and Sean Finn. Within my project, I focused on pregancy rates from 2000-2017 for four different age groups: 20-24, 25-29, 30-34, and 35-39.
+author:
+  - name: Isabella Mahmoud
+date: 2022-01-24
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r}
+library(tidyverse)
+library(gt)
+library(janitor)
+library(ggplot2)
+library(readr)
+Birth <- read_csv("~/STA 518/Activities/Final Mess Around/NationalAndStatePregnancy_PublicUse.csv")
+```
+
+```{r setup, include=FALSE}
+Birth %>%
+select(state, year, pregnancyrate2024:pregnancyrate3539) %>%
+filter(year >= 2000, state !="US" & state != "DC") %>%
+clean_names(case=c("upper_camel")) %>%
+rename(
+  "Pregnancy Rate 20-24" = Pregnancyrate2024,
+  "Pregnancy Rate 25-29" = Pregnancyrate2529,
+  "Pregnancy Rate 30-34" = Pregnancyrate3034,
+  "Pregnancy Rate 35-49" = Pregnancyrate3539
+) %>%
+gt() %>%
+  cols_width (
+    State ~ px(60),
+    ends_with("r") ~ px(60),
+    everything() ~ px(180)
+)
+Birth
+```
+
+This chunk is filtering the data to what is being focused on in this project.
+
+```{r}
+Birth2 <- Birth %>%
+  select("state", "year", "pregnancyrate2024":"pregnancyrate3539") %>%
+  filter(year >=2000, state !="US" & state != "DC")
+Birth2
+```
+
+This code creates a bar graph displaying the pregnancy rates for all age groups for the year 2000.
+
+```{r}
+Bir <- Birth2 %>%
+  filter(year==2000) %>%
+  pivot_longer(c("pregnancyrate2024":"pregnancyrate3539"), names_to = "Groups", values_to = "Rates") %>%
+  group_by(Groups, year) %>%
+  summarise(Rate_Avg = mean(Rates)) %>%
+  ggplot() +
+  geom_col(aes(x=Groups, y=Rate_Avg, fill=Groups)) +
+  scale_x_discrete(labels=c("20-24", "25-29", "30-34", "35-39")) +
+  labs(x = "Age groups",
+       y= "Average pregnancy rates",
+       title = "Average pregnancy rates by age for the year 2000 in the United States",
+       caption = "*Rates are per 1,000 women",
+       tag = "Fig. 1")  +
+  theme(axis.text.x = element_text(angle = 60, size=12, hjust = 1))
+Bir
+```
+
+The code chunk creates a bar graph for the year 2017 for average pregnancy rates among all age groups.
+
+```{r}
+Bir2 <- Birth2 %>%
+  filter(year==2017) %>%
+  pivot_longer(c("pregnancyrate2024":"pregnancyrate3539"), names_to = "Groups", values_to = "Rates") %>%
+  group_by(Groups, year) %>%
+  summarise(Rate_Avg = mean(Rates)) %>%
+ggplot() +
+  geom_col(aes(x=Groups, y=Rate_Avg, fill=Groups)) +
+  scale_x_discrete(labels=c("20-24", "25-29", "30-34", "35-39")) +
+  labs(x = "Age groups",
+       y= " Average pregnancy rates",
+       title = "Average pregnancy rates by age for the year 2017 in the United States",
+       caption = "*Rates are per 1,000 women",
+       tag = "Fig. 2") +
+  theme(axis.text.x = element_text(angle = 60, size=12, hjust = 1))
+Bir2
+```
+
+In order to create a linge graph displaying the birth rates for each year for each age group, I had to use the pivot_longer function.
+This allowed me to attach rates to different age groups per year. Once grouping by groups and year, I used "summarise" to get an average rate. Doing this made it so I could graph group averages per year over a 17 year period.
+
+```{r}
+Bir3 <- Birth2 %>%
+    pivot_longer(c("pregnancyrate2024":"pregnancyrate3539"), names_to = "Groups", values_to = "Rates") %>%
+    group_by(Groups, year) %>%
+    summarise(Rate_Avg = mean(Rates)) %>%
+    ggplot(mapping = aes(x = year, y = Rate_Avg, color = Groups)) + 
+    geom_point()+
+    geom_line() +
+  labs(x = "Year",
+       y= "Average pregnancy rates",
+       title = "Average pregnancy rates by year in the United States from 2000-2017",
+       caption = "*Rates are per 1,000 women",
+       tag = "Fig. 3")
+Bir3
+```
+
+This next part is looking at abortion rates for 20-24 year olds in Illinois over 17 years. Since I'm from Illinois and within this age group, I thought this data would be most relevant/interesting to me. 
+
+```{r}
+rib <- Birth %>%
+  select("state", "year", "abortionrate2024") %>%
+  filter(year >=2000, state == "IL") %>%
+  pivot_longer(c("abortionrate2024"), names_to = "Groups", values_to = "Rates")
+rib
+```
+
+This chunk creates a line graph for the code chunk above. 
+
+```{r}
+rib %>%
+  ggplot(mapping=aes( x=year, y=Rates)) +
+    geom_point() +
+    geom_smooth(method=lm, se=F) +
+   labs(x = "Year",
+       y= "Average abortion rates",
+       title = "Average abortion rates for 20-24 year olds per year in Illinois from 2000-2017",
+       caption = "*Rates are per 1,000 women",
+       tag = "Fig. 4")
+```
+
+A model is made based off the simple linear regression created above. Broom::tidy focuses on specific statistics, such as the coefficents for the intercept and predictor, standard error, test statistic, and p-value. 
+
+```{r}
+model <- lm(Rates ~ year, data=rib)
+summary(model)
+
+#this will make things look nicer
+model %>% 
+  broom::tidy()
+```
+
+
+
